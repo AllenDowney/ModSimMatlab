@@ -5,13 +5,14 @@
 % http://creativecommons.org/licenses/by-nc/3.0/
 %
 
-\documentclass{tufte-book}
+\documentclass{book}
 \usepackage{color}
 \usepackage{graphicx}
 \usepackage{palatino}
 \usepackage{mathpazo}
 \usepackage{subfigure}
 \usepackage{url}
+\usepackage{fancyhdr}
 \usepackage{makeidx}
 \usepackage{amsmath, amsthm, amssymb}
 \usepackage{hevea}                           
@@ -25,7 +26,7 @@
 \newtheorem{del}{Exercise}
 \newtheorem{con}{Conjecture}
 
-\hypersetup{colorlinks}
+%\hypersetup{colorlinks}
 
 % load package with ``framed'' and ``numbered'' option.
 %\usepackage[framed,autolinebreaks,useliterate]{mcode}
@@ -34,7 +35,7 @@
 
 \sloppy
 
-\renewcommand\MakeUppercase{}
+%\renewcommand\MakeUppercase{}
 
 \newenvironment{code}{\vspace{0.0\parskip} \begin{verbatim}}{\end{verbatim} \vspace{0.0\parskip}}
 
@@ -65,7 +66,10 @@
 
 \begin{document}
 
+\maketitle
+
 \frontmatter
+
 
 % TITLE PAGES FOR LATEX VERSION
 
@@ -83,7 +87,7 @@ Copyright 2014 Allen B. Downey and Mark H. Somerville
 
 \begin{flushleft}
 Green Tea Press       \\
-9 Washburn Ave \\
+9 Washburn Ave        \\
 Needham MA 02492
 \end{flushleft}
 
@@ -104,8 +108,6 @@ The LaTeX source for this book is available from
 MATLAB\myreg is a registered trademark of The
 Mathworks, Inc.  The Mathworks does not warrant the accuracy
 of this book.
-
-\maketitle
 
 \tableofcontents
 
@@ -216,6 +218,7 @@ code examples look better.
 
 
 \chapter{Modeling}
+\label{modeling}
 
 This book is about using models to explain the behavior of physical
 systems, make predictions, and guide the design of engineered systems.
@@ -286,11 +289,11 @@ divides once.  If we start with 100 billion cells, after two hours
 we expect to have 200 billion cells.  After two more hours,
 we expect 400 billion cells, and so on.
 
-We can write this model in the form of a difference equation,
-
+We can write this model in the form of a mathematical equation,
+%
 \[ p_{n+1} = 2 p_n \]
-
-where $p_n$ is the population after $n$ generations.  We could
+%
+where $p_n$ is the population during the $n$th generation.  We could
 write the same model in MATLAB syntax, like this:
 
 \begin{verbatim}
@@ -299,22 +302,28 @@ p(n+1) = 2 * p(n)
 
 If you don't know MATLAB, don't worry; we'll get to it soon.
 With a few more lines of code, you could execute this
-model and plot the results, shown in Figure~\ref{}.
+model and plot the results, shown in Figure~\ref{fig_yeast1}.
+
+\begin{figure}
+\centerline{\includegraphics[height=7cm]{figs/yeast1}}
+\caption{Results from a simple model of yeast growth.}
+\label{fig_yeast1}
+\end{figure}
 
 Or with mathematical analysis, you could write a closed-form expression
 for $p_n$:
-
-\[ p_n = 2^n p_0 \]
-
-where $p_0$ is the initial population (after 0 generation).
+%
+\[ p_n = 2^n p_1 \]
+%
+where $p_1$ is the initial population.
 In this case ``closed form'' implies that we can compute the
 population after $n$ generations directly, without computing
 the population at all times up to $n$.
 
 With a little more analysis, we can solve for $n$, yielding
-
+%
 \[ n = \log_2 p_n - \log_2 p_0 \]
-
+%
 So, for example, if the initial population is 100 billion cells,
 we could calculate the number of generations to reach 800 billion
 cells: 3 generations, or 6 hours.
@@ -326,10 +335,10 @@ never run out of sugar or the other materials they need, and that
 they never die!
 
 To make valid predictions for more than a few generations, we need to
-extend the model to include some of these factors, maybe all of them,
-or more.  The modeling process is almost always {\bf iterative}, which
-means that we start with a simple model and add features gradually
-until we find a model that's good enough for the intended purpose.
+extend the model to include some of these factors, and maybe more.
+The modeling process is almost always {\bf iterative}, which means
+that we start with a simple model and add features gradually until we
+find a model that's good enough for the intended purpose.
 
 We'll come back to this example over the next couple of chapters.
 
@@ -342,7 +351,7 @@ We'll come back to this example over the next couple of chapters.
 \label{fig_framework}
 \end{figure}
 
-Figure~\ref{} shows a framework for the modeling and simulation
+Figure~\ref{fig_framework} shows a framework for the modeling and simulation
 process.  In the lower-left corner is a {\bf physical system}, which
 could be almost anything in the natural or engineered world.  In
 the example from the previous section, the system is fermenting
@@ -391,7 +400,7 @@ This book is intended for people with no programming experience.
 So we will start at the beginning and build up gradually.
 
 At heart, MATLAB is a glorified calculator.  When you start
-MATLAB\sidenote{How you start MATLAB depends on what operating system
+MATLAB\footnote{How you start MATLAB depends on what operating system
   you are using and how MATLAB is installed.}  you will see a window
 entitled {\sf MATLAB} that contains smaller windows entitled {\sf
   Current Directory}, {\sf Command History} and {\sf Command Window}.
@@ -836,7 +845,9 @@ You might be tempted to write something like this:
 1 / 2 * sqrt(pi)
 \end{verbatim}
 
-But that would be wrong.  So very wrong.
+But that would be wrong.  So very wrong.  Why?  Because division and
+multiplication are evaluated from left to right, so this expression
+is equivalent to $\sqrt(\pi) / 2$.
 
 
 \section{Floating-point arithmetic}
@@ -1087,11 +1098,11 @@ about the program, but does not affect its execution.
 \begin{ex}
 According to \url{https://en.wikipedia.org/wiki/Iceberg}:
 
-\begin{blockquote}
+\begin{quote}
 Because the density of pure ice is about 920 kg/m$^3$, and that of
 seawater about 1025 kg/m$^3$, typically only one-tenth of the volume of
 an iceberg is above water.
-\end{blockquote}
+\end{quote}
 
 Suppose you want to estimate the fraction of the {\em height} of an
 iceberg that is above water.  What assumptions do you have to make
@@ -1144,50 +1155,50 @@ another flow, or treat it as part of the death process.  The units of
 flow tend to be in stock per unit time, like ``yeast cells per hour''
 or ``elephants per year.''
 
-Stocks are usually {\bf extensive}, which means that they are
-quantities that add up when you combine them.  Things that are
-countable, like yeast cells and elephants, are extensive.  If there
-are 200 elephants in the park and 10 more migrate in, there are 210
-elephants in the park.  That might seem too obvious to mention, but in
-contrast, consider sand piles.  If you have two sand piles and you put
-one on top of the other, how many sand piles do you have?
+%Stocks are usually {\bf extensive}, which means that they are
+%quantities that add up when you combine them.  Things that are
+%countable, like yeast cells and elephants, are extensive.  If there
+%are 200 elephants in the park and 10 more migrate in, there are 210
+%elephants in the park.  That might seem too obvious to mention, but in
+%contrast, consider sand piles.  If you have two sand piles and you put
+%one on top of the other, how many sand piles do you have?
 
-Some other physical quantities, like mass and usually volume,
-are also extensive, but others, like density and hardness,
-are not.  So if you cleave a diamond, the pieces have less mass and less
-volume, but the same density and hardness as the original.  Properties
-like density and hardness are {\bf intensive}.
-For more on this topic, see
-\url{https://en.wikipedia.org/wiki/Intensive_and_extensive_properties}.
+%Some other physical quantities, like mass and usually volume,
+%are also extensive, but others, like density and hardness,
+%are not.  So if you cleave a diamond, the pieces have less mass and less
+%volume, but the same density and hardness as the original.  Properties
+%like density and hardness are {\bf intensive}.
+%For more on this topic, see
+%\url{https://en.wikipedia.org/wiki/Intensive_and_extensive_properties}.
 
 
 
-\begin{ex}
-Which of the following quantities might reasonably be stocks?  Flows?
-Neither? Why?
+%\begin{ex}
+%Which of the following quantities might reasonably be stocks?  Flows?
+%Neither? Why?
 
-\begin{enumerate}
-\item The population of the world.
-\item The number of educated adults in a country.
-\item The number of U-238 atoms in a nuclear reactor.
-\item The pressure level in a nuclear reactor.
-\item The fraction of battery charge remaining in a laptop battery.
-\item The power being consumed by a laptop.
-\item The speed of a runner.
-\item The kinetic energy of a bullet.
-\item The number of barrels of oil imported by the U.S. each year.
-\item The biomass of scallops in the George's Bank fishing area.
-\item The number of minke whales harvested worldwide each year.
-\item The reproduction rate of minke whales (number of babies per
-  adult per year).
-\item The electric current passing through a wire (i.e., the number of
-  Coulombs of charge passing a given point per unit time).
-\item The amount of water in a bathtub.
-\item The number of liters of water per second flowing out of a faucet.
-\item The rate of temperature change in a room (degrees C per second).
- \end{enumerate}
+%\begin{enumerate}
+%\item The population of the world.
+%\item The number of educated adults in a country.
+%\item The number of U-238 atoms in a nuclear reactor.
+%\item The pressure level in a nuclear reactor.
+%\item The fraction of battery charge remaining in a laptop battery.
+%\item The power being consumed by a laptop.
+%\item The speed of a runner.
+%\item The kinetic energy of a bullet.
+%\item The number of barrels of oil imported by the U.S. each year.
+%\item The biomass of scallops in the George's Bank fishing area.
+%\item The number of minke whales harvested worldwide each year.
+%\item The reproduction rate of minke whales (number of babies per
+%  adult per year).
+%\item The electric current passing through a wire (i.e., the number of
+%  Coulombs of charge passing a given point per unit time).
+%\item The amount of water in a bathtub.
+%\item The number of liters of water per second flowing out of a faucet.
+%\item The rate of temperature change in a room (degrees C per second).
+% \end{enumerate}
+%\end{ex}
 
-\end{ex}
 
 
 \section{Stock and flow diagrams}
@@ -1231,7 +1242,7 @@ that it describes the nature of the dependence, but is not
 function that relates the flow rate to the number of elephants.
 
 When you draw stock and flow diagrams, you should resist the
-temptation to improvise.  These symbols and other we'll see soon
+temptation to improvise.  These symbols
 make up a standard graphical vocabulary.  If you stick with the
 standard, people will understand what you mean.  If you violate
 the standard, they won't.
@@ -1241,16 +1252,16 @@ For more on this topic, see
 
 \begin{ex}
 
-\begin{marginfigure}
-\includegraphics[width=6cm]{figs/forest}
-\end{marginfigure}
+%\begin{figure}
+%\includegraphics[width=6cm]{figs/forest}
+%\end{figure}
 
-In the Northeast, the level of forestation has changed wildly over the
-last two hundred years, due to a variety of processes, both natural
-and social.  Make a stock and flow diagram that could be used to
-explain how the number of trees in the Northeast has changed over the
-last two hundred years.  Make a list of bullet points
-explaining the flows and dependencies.
+In the Northeastern U.S., the level of forestation has changed wildly
+over the last two hundred years, due to a variety of processes, both
+natural and social.  Make a stock and flow diagram that could be used
+to explain how the number of trees in the Northeast has changed over
+the last two hundred years.  Make a list of bullet points explaining
+the flows and dependencies.
 \end{ex}
 
 
@@ -1342,8 +1353,7 @@ The elements of this sequence occur naturally in many plants,
 particularly those with petals or scales arranged in the form of a
 logarithmic spiral.
 
-The following expression computes the
-$n$th Fibonacci number:
+The following expression computes the $n$th Fibonacci number:
 
 \begin{equation}
 F_n = \frac{1}{\sqrt{5}}
@@ -1357,7 +1367,7 @@ Translate this expression into MATLAB and store your
 code in a file named {\tt fibonacci1}.  At the prompt, set the value
 of {\tt n} to 10 and then run your script.  The last line of your
 script should assign the value of $F_n$ to {\tt ans}.
-(The correct value of $F_{10}$ is 55).
+The correct value of $F_{10}$ is 55.
 \end{ex}
 
 
@@ -1656,6 +1666,8 @@ you should try incremental development.
 
 
 
+
+
 \section{Glossary}
 
 \begin{description}
@@ -1689,69 +1701,6 @@ which is not part of the finished program.
 \section{Exercises}
 
 \begin{ex}
-
-The United Kingdom is made up of 
-England, Scotland, Wales, and Northern Ireland.
-
-In 2008 the total population of the U.K. was roughly 60 million:
-about 50 million were in England, 5 million in Scotland,
-3 million in Wales, and 2 million in Northern
-Ireland. 
-
-Suppose, just for the sake of this exercise, that
-every year 10\% of the
-Scottish population migrates to England. In England, approximately
-1\% of residents move to Scotland every year. In Wales roughly
-1000 people will move to England every year. 
-There is no net migration between Northern Ireland and the other
-countries of the U.K.
-
-\begin{enumerate}
-
-\item Draw a stock and flow diagram to model the various UK
-  populations as described above.
-
-\item Write difference equations to model the populations.
-
-\item What is the long-term outlook for Scotland?  For England?
-\end{enumerate}
-
-\end{ex}
-
-
-\begin{ex}
-
-The life cycle of the Northern Spotted Owl divides naturally into
-three stages: juvenile (up to 1 year), subadult (1 to 2 years), and
-adult (over 2 years). The owl mates for life during the subadult and
-adult stages, but only begins to breed as an adult. Using field data
-from demographic studies, Lamberson et al.\footnote{{\bf A Dynamic
-    Analysis of Northern Spotted Owl Viability in a Fragmented Forest
-    Landscape}, Lamberson, McKelvey, Noon, and Voss, {\em Conservation
-    Biology} 6, 505-512 (1992).} determined that the yearly birth rate
-was $33\%$, that $18\%$ of the juveniles survive to become adults,
-that $71\%$ of the subadults survive to become adults and that $94 \%$
-of the adults survive every year.
-
-\begin{enumerate}
-\item Draw a stock and flow diagram to model the Northern Spotted Owl
-  population.
-
-\item Write difference equations to model the situation.
-
-\item What is the long-term outlook for the owls? Why?
-
-\item Lamberson's work also indicates that the availability of
-  appropriate nesting trees plays a significant role in determining
-  the birth rate.  Create a new model (stock and flow diagram +
-  difference equations) that takes this effect into account, and make
-  qualitative predictions about how this will play out.
-\end{enumerate}
-
-\end{ex}
-
-
-\begin{ex}
 \label{cargame}
 
 Imagine that you are the owner of a car rental company with two
@@ -1759,8 +1708,8 @@ locations, Albany and Boston.  Some of your customers do ``one-way
 rentals,'' picking up a car in Albany and returning it in Boston, or
 the other way around.  Over time, you have observed that each week 5\%
 of the cars in Albany are dropped off in Boston, and 3\% of the cars
-in Boston get dropped off in Albany.
-At the beginning of the year, there are 150 cars at each location.
+in Boston get dropped off in Albany.  At the beginning of the year,
+there are 150 cars at each location.
 
 Write a script called {\tt car\_update} that updates the number
 of cars in each location from one week to the next.  The precondition
@@ -1791,75 +1740,7 @@ and how to plot the values of {\tt a} and {\tt b} versus time.
 
 
 % chap03
-\chapter{Loops}
-
-\section{Formalism \#2: Difference Equations}
-
-\subsection{Discrete-Time vs Continuous-Time}
-
-So far, we've defined the stock and flows for the elephant in the park, but we haven't yet spelled out whether we intend to keep track of elephants in discrete time or in continuous time. If we choose discrete time then we will keep track of the stock in discrete time units (e.g. the elephant population from year to year) and flows tell us about the change in the stock per year (e.g. the number of elephants born each year). In continuous time on the other hand, stocks are defined at all points in time (e.g. we know the elephant population at any moment) and flows tell us about the rate of change of stock (e.g. the rate of change of elephants due to birth). It's up to us to choose either discrete or continuous time, and our choice should depend on the system we are modeling and the work we intend to do. Some stocks like energy seem to be continuously changing in time and thus a discrete model may not be the best choice, while other systems like an elephant population change more slowly and a discrete model may be the best choice.  
-
-For the rest of this module we will use discrete-time models and we now introduce an additional type of model representation appropriate for discrete models: {\it difference equations}. \footnote{Continuous-Time models will be introduced in the next module and will be formalized with differential equations.}
-
-\subsection{Difference equation formalism}
-
-In mathematics, difference equations are a recurrence relation that define a sequence:  the value of every element in the sequence is defined as a function of elements that precede it.  For example, a very simple difference equation is
-
-$$x(t+1) = x(t) + 2$$
-
-If we let $x(0) = 1$, then $x(1) = 3$, $x(2) = 5$, and so on, leading to the sequence $\{ 1, 3, 5, 7, 9, ... \} $.
-
-Note that in order to define the sequence, we must not only define the recurrence relation, we must also define the first value of $x$.
-
-Also note that in the world of mathematics, we tend to start our labeling of a sequence with $t=0$.  Unfortunately (as we'll encounter shortly) in the world of MATLAB, we must start our labeling with an index of $t=1$.   {\it Vive la diff{\' e}rence!} \sidenote{Sorry.  I couldn't resist.  Would you have been able to?}
-
-Although difference equations {\it look} very simple, they in fact can lead to all kinds of crazy behavior.  For example, the difference equation
-
-$$x(t+1) =r x(t)(1-x(t))$$
-looks innocent enough, but in fact defines the {\it logistic map}, which yields constant behavior for some values of $r$, periodic behavior for others, and chaotic behavior for still others.
-\begin{marginfigure}
-\includegraphics[width=6cm]{figs/bifurcation}
-\caption{The bifurcation diagram for the logistic map.  More to come on this!}
-\end{marginfigure}
-
-
-\subsection{Exercise}
-
-Calculate the first 10 terms (i.e., $x(1)$ through $x(10)$) of the logistic map for $r=1$, $r=3.2$, and $r=3.6$.  For all three cases, start with $x(0) = 0.5$.
-
- 
-
-\subsection{Using difference equations for models}
-
-For systems that we wish to model in discrete time, difference equations are an excellent choice mathematically.  Here by ``discrete time'', we mean that we are sampling the system only at particular, discrete instances in time.  For example, if we were modeling the population of birds, we might decide to sample the bird population once a year, and we might decide to build a model that only predicted the bird population at the time of the sampling.  This is not an unreasonable thing to do:  many species breed at a particular time each year, so it makes sense to talk about the number animals born in a particular breeding season.  Similarly, if you wished to model populations of school children, it might make sense to keep track of how many are in first grade, second grade, and so forth, and  so it would make sense to track students by year.  
-
-Returning to our friends the elephants, recall our simple model that looked like this:
-
-%\begin{figure}[h!]
-\beforefig
- \centerline{\includegraphics[height=1in]{figs/ElephantStockAndFlow1}}
-%\caption{ } %end{figure}
-\afterfig
-
-Translating this to a difference equation, we might write
-
-$$E(t+1) = E(t) + b E(t) - d E(t)$$
-
-by which we mean, ``The number of elephants in the game park in year $t+1$ is however many elephants were in the park in year $t$ plus the number born over the course of year $t$, minus the number that died.  The number born  and the number that died in year $t$ are proportional to how many elephants were present in year $t$.''
-
-
-\subsection{Exercise}
-
-Translate the following stock and flow diagram into a difference equation.  Use a generic function $f(C,E)$ to represent the function of carrying capacity $C$ and elephant population $E$; be sure to define all terms in your difference equation. 
-
-%\begin{figure}[h!]
-\beforefig
-\includegraphics[height=3in]{figs/ElephantStockAndFlow2}
-%\caption{ } %end{figure}
-\afterfig
-
-
-
+\chapter{Chapter title}
 
 \section{Updating variables}
 
@@ -1901,7 +1782,7 @@ b = b + atob
 
 It is easy to look at this code and confirm that it obeys Conversation
 of Cars.  Even if the value of {\tt atob} is wrong, at least the total
-number of cars is right.  And that brings us to the Seventh Theorem of
+number of cars is right.  And that brings us to the Sixth Theorem of
 Debugging:
 
 \begin{quote}
@@ -1987,9 +1868,64 @@ are talking about the national debt.
 
 A natural way to handle this problem is to use relative
 error, which is the error expressed as a fraction (or percentage)
-of the exact value.  In this case, we would divide the error
+of the exact value.  In this case, we would divide the absolute error
 by 362,880, yielding $.00921$, which is just less than 1\%.
 For many purposes, being off by 1\% is good enough.
+
+
+\section{Unit testing}
+
+In large software projects, {\bf unit testing} is the process of
+testing software components in isolation before putting
+them together.
+
+The programs we have seen so far are not
+big enough to need unit testing, but the same principle applies
+when you are working with a new function or a new language feature
+for the first time.  You should test it in isolation before you
+put it into your program.
+
+For example, suppose you know that {\tt x} is the sine of some
+angle and you want to find the angle.  You find the MATLAB function
+{\tt asin}, and you are pretty sure it computes the inverse sine
+function.  Pretty sure is not good enough; you want to be very sure.
+
+Since we know $\sin 0 = 0$, we could try
+
+\begin{verbatim}
+>> asin(0)
+ans = 0
+\end{verbatim}
+
+which is correct.  Also, we know that the sine of 90 degrees is
+1, so if we try {\tt asin(1)}, we expect the answer to be 90, right?
+
+\begin{verbatim}
+>> asin(1)
+ans = 1.5708
+\end{verbatim}
+
+Oops.  We forgot that the trig functions in MATLAB work in radians,
+not degrees.  So the correct answer is $\pi/2$, which we can
+confirm by dividing through by {\tt pi}:
+
+\begin{verbatim}
+>> asin(1) / pi
+ans = 0.5000
+\end{verbatim}
+
+With this kind of unit testing, you are not really checking for
+errors in MATLAB, you are checking your understanding.  If you
+make an error because you are confused about how MATLAB works, it
+might take a long time to find, because when you look at the code,
+it looks right. 
+
+Which brings us to the Seventh Theorem of Debugging:
+
+\begin{quote}
+The worst bugs aren't in your code; they are in your head.
+\end{quote}
+
 
 
 \section{for loops}
@@ -2017,16 +1953,9 @@ first time it runs, it creates the variable {\tt i} and assigns it the
 value 1.  The second time, {\tt i} gets the value 2, and so on, up to
 52.
 
-The colon operator, {\tt :}, specifies a {\bf range} of integers.  In
-the spirit of unit testing, you can create a range at the prompt:
-
-\begin{verbatim}
->> 1:5
-ans =  1     2     3     4     5
-\end{verbatim}
-
+The colon operator, {\tt :}, specifies a range of integers.  
 The variable you use in the for statement is called the {\bf loop
-variable}.  It is a common convention to use the names {\tt i},
+variable}.  It is a common convention to use {\tt i},
 {\tt j} and {\tt k} as loop variables.
 
 The statements inside the loop are called the {\bf body}.  By convention,
@@ -2081,28 +2010,34 @@ To plot a single point, type
 \end{verbatim}
 
 A {\sf Figure Window} should appear with a graph and a single, blue dot
-at $x$ position 1 and $y$ position 2.  To make the dot more visible,
-you can specify a different shape:
+at $x$ position 1 and $y$ position 2.  MATLAB does not always bring
+the new window to the front, so you might have to raise it (or lower
+the windows in front).
+
+By default, the plotted point is quite small.
+To make it more visible, you can specify a different shape:
 
 \begin{verbatim}
 >> plot(1, 2, 'o')
 \end{verbatim}
 
 The letter in single quotes is a string that specifies how the
-point should be plotted.  You can also specify the color:
-
-\begin{verbatim}
->> plot(1, 2, 'ro')
-\end{verbatim}
-
-{\tt r} stands for red; the other colors include {\bf g}reen, {\bf
-b}lue, {\bf c}yan, {\bf m}agenta, {\bf y}ellow and blac{\bf k}.
+point should be plotted; {\tt o} indicates a circle.
 Other shapes include {\tt +}, 
 {\tt *}, 
 {\tt x}, 
 {\tt s} (for square), 
 {\tt d} (for diamond), and 
 \verb+^+ (for a triangle). 
+
+You can also specify the color:
+
+\begin{verbatim}
+>> plot(1, 2, 'ro')
+\end{verbatim}
+
+{\tt r} stands for red; other colors include {\bf g}reen, {\bf
+b}lue, {\bf c}yan, {\bf m}agenta, {\bf y}ellow and blac{\bf k}.
 
 When you use {\tt plot} this way, it can only plot one point at a
 time.  If you run {\tt plot} again, it clears the figure before making
@@ -2136,205 +2071,220 @@ from time to time, with the command {\tt clf}.
 \end{ex}
 
 
-\section{Unit testing}
+\section{More beer}
 
-In large software projects, {\bf unit testing} is the process of
-testing software components in isolation before putting
-them together.
+In Section~\ref{modeling} I presented a simple model of yeast growth:
+%
+\[ p_{n+1} = 2 p_n \]
+%
+which says that the population of yeast in the next generation is
+twice the population of the current generation.  In reality, yeast
+divide continuously: at any point in time different cells are in
+different stages of division, and some probably divide faster than others.
+So there is no such thing as a ``generation'' of yeast.  But
+for modeling purposes it is often convenient to divide time into
+generations or ``time steps.''
 
-The programs we have seen so far are not
-big enough to need unit testing, but the same principle applies
-when you are working with a new function or a new language feature
-for the first time.  You should test it in isolation before you
-put it into your program.
+Models like this are called {\bf discrete time} because they treat
+time as if it were chopped up into discrete steps.
+The alternative is {\bf continuous time}, which treats time as
+a continuous quantity.  We will see continuous time models
+in Chapter~\ref{ode}, but for now we will stick with discrete time.
 
-For example, suppose you know that {\tt x} is the sine of some
-angle and you want to find the angle.  You find the MATLAB function
-{\tt asin}, and you are pretty sure it computes the inverse sine
-function.  Pretty sure is not good enough; you want to be very sure.
-
-Since we know $\sin 0 = 0$, we could try
-
-\begin{verbatim}
->> asin(0)
-ans = 0
-\end{verbatim}
-
-which is correct.  Also, we know that the sine of 90 degrees is
-1, so if we try {\tt asin(1)}, we expect the answer to be 90, right?
+We can implement this model in MATLAB using a {\tt for} loop:
 
 \begin{verbatim}
->> asin(1)
-ans = 1.5708
-\end{verbatim}
+clf; hold on
+p = 100          % yeast population in billions
 
-Oops.  We forgot that the trig functions in MATLAB work in radians,
-not degrees.  So the correct answer is $\pi/2$, which we can
-confirm by dividing through by {\tt pi}:
-
-\begin{verbatim}
->> asin(1) / pi
-ans = 0.5000
-\end{verbatim}
-
-With this kind of unit testing, you are not really checking for
-errors in MATLAB, you are checking your understanding.  If you
-make an error because you are confused about how MATLAB works, it
-might take a long time to find, because when you look at the code,
-it looks right. 
-
-Which brings us to the Sixth Theorem of Debugging:
-
-\begin{quote}
-The worst bugs aren't in your code; they are in your head.
-\end{quote}
-
-
-\section{Sequences}
-
-In mathematics a {\bf sequence} is an ordered set of numbers.  The
-numbers in the sequence are called {\bf elements}.  In math notation,
-the elements are denoted with subscripts, so the first element of the
-series $A$ is $A_1$, followed by $A_2$, and so on.
-
-{\tt for} loops are a natural way to compute the elements of a sequence.
-As an example, in a geometric sequence, each element is a constant
-multiple of the previous element.  As a more specific example, let's
-look at the sequence with $A_1 = 1$ and the ratio $A_{i+1} = A_i/2$,
-for all $i$.  In other words, each element is half as big as the one
-before it.
-
-The following loop computes the first 10 elements of $A$:
-
-\begin{verbatim}
-a = 1
-for i=2:10
-    a = a/2
+for i=1:6
+    plot(i, p, 'ro')
+    p = 2 * p
 end
 \end{verbatim}
 
-Each time through the loop, we find the next value of {\tt a}
-by dividing the previous value by 2.  Notice that the loop
-range starts at 2 because the initial value of {\tt a} corresponds
-to $A_1$, so the first time through the loop we are computing
-$A_2$.
+This is the code that generated Figure~\ref{fig_yeast1}.
+{\tt p} is the population of yeast, represented in billions of
+cells.  The loop variable, {\tt i}, represents the generation
+number.  Each time through the loop we plot the current population
+and then update {\tt p}.
 
-Each time through the loop, we replace the previous element with
-the next, so at the end, {\tt a} contains the 10th element.  The
-other elements are displayed on the screen, but they are not saved
-in a variable.  Later, we will see how to save the elements
-of a sequence in a vector.
-
-This loop computes the sequence {\bf recurrently}, which means
-that each element depends on the previous one.
-For this sequence it is also possible to compute the $i$th element
-{\bf directly}, as a function of $i$, without using the previous element.
-In math notation, $A_i = A_1 r^{i-1}$.  
-
-\begin{ex}
-Write a
-script named {\tt sequence} that uses a loop
-to compute elements of $A$ directly.
-\end{ex}
-
-
-\section{Series}
-\label{series}
-
-In mathematics, a {\bf series} is the sum of the elements of
-a sequence.  It's a terrible name, because in common English,
-``sequence'' and ``series'' mean pretty much the same thing, but in
-math, a sequence is a set of numbers, and a series is an expression
-(a sum) that has a single value.  In math notation, a series
-is often written using the summation symbol $\sum$.
-
-For example, the sum of the first 10 elements of $A$ is
-
-\[ \sum_{i=1}^{10} A_i \]
-
-A {\tt for} loop is a natural way to compute the value of this
-series:
+To label the axes, you can use MATLAB functions {\tt xlabel}
+and {\tt ylabel}:
 
 \begin{verbatim}
-A1 = 1;
-total = 0;
-for i=1:10
-    a = A1 * 0.5^(i-1);
-    total = total + a;
+xlabel('# generations')
+ylabel('# cells (billions)')
+\end{verbatim}
+
+
+\section{Limits to growth}
+
+The result in the previous section is a {\bf geometric sequence},
+which means that the ratio of consecutive elements is a constant.  On
+a log scale, a geometric sequence looks like a straight line.  The
+following code sets the y-axis to a log scale:
+
+\begin{verbatim}
+set(gca, 'yscale', 'log')
+\end{verbatim}
+
+{\tt gca} stands for ``get current axes''; it is a MATLAB
+function that returns the axes for the most recent plot, which
+you can use, various properties of the figure.  Figure~\ref{fig_yeast2}
+shows the result:
+
+\begin{figure}
+\centerline{\includegraphics[height=7cm]{figs/yeast2}}
+\caption{Results from a simple model of yeast growth, on a log scale}
+\label{fig_yeast2}
+\end{figure}
+
+As expected, it's a straight line.  Of course, this line can't go
+on forever.  Eventually the yeast have to hit
+some limit to growth: maybe they use up all the food, or the
+alcohol level might get too high, or maybe they just run out of room!
+
+Without some background knowledge, it's hard to say whether one
+of these factors, or some combination, or some other factor is the
+primary limit to growth.  But based on my homebrewing experience,
+I can make some informed conjectures.
+
+\begin{itemize}
+
+\item At the end of the fermentation process, the yeast precipitate to
+  the bottom of the vessel, and it's apparent that they take up less
+  than 10\% of the volume, so space is probably not a limiting factor.
+
+\item During bottling, it is common to add a small amount of sugar to
+  the fermented beer.  This sugar causes the fermentation process to
+  start up again, producing the carbon dioxide that makes the beer
+  foamy.  This observation suggests that sugar is the limiting factor
+  that caused fermentation to stop.
+
+\end{itemize}
+
+
+\section{A two-stock model}
+
+We can extend the model to take into account the supply of sugar
+by adding a second stock.  The stock and flow diagram for this model
+looks like this:
+
+MARK, PLEASE DRAW THE FIGURE
+
+There are two stocks, sugar and yeast, one flow, which represents
+yeast reproduction, and one dependence arrow, which shows that
+the presence of sugar increases yeast reproduction.
+
+As usual, the dependence arrow shows the qualitative relationship
+between the stock of sugar and the flow of yeast, but before
+we can implement the model, we have to be more specific.  Again,
+without more background knowledge, we don't know exactly what this
+relationship should be, but we can make some suppositions:
+
+\begin{itemize}
+
+\item Each cell probably requires some minimal amount of sugar
+to reproduce.
+
+\item If there is enough sugar for all cells to reproduce, then
+the population doubles during each time step, as before.
+
+\item Once all sugar is consumed, reproduction stops.
+
+\end{itemize}
+
+Here is the code that implements this model in MATLAB:
+
+\begin{verbatim}
+clf; hold on
+p = 100         % yeast population in billions
+s = 3000        % stock of sugar in g
+factor = 0.01   % grams of sugar to create a new cell
+
+for i=1:20
+    plot(i, p, 'ro')
+    consumed = min(p * factor, s);
+    s = s - consumed
+    p = p + consumed / factor
 end
-ans = total
 \end{verbatim}
 
-{\tt A1} is the first element of the sequence, so each time
-through the loop {\tt a} is the $i$th element.  
+{\tt p} is the yeast population in billions; {\tt s} is the
+stock of sugar in grams.  For a five-gallon batch of beer, most
+recipes call for about 3 kg of malted barley, which is mostly
+fermentable sugars.
 
-In this loop {\tt total} is an {\bf accumulator}; that is, a variable
-that accumulates a result a little bit at a time.  Before the loop we
-initialize it to 0.  Each time through the loop we add in the $i$th
-element.  At the end of the loop, {\tt total} contains the sum of the
-elements, which is assigned to {\tt ans}.
+{\tt factor} is the number of grams of sugar a cell needs to
+reproduce.  I have no idea what this value should be, so I am
+starting with a value I chose arbitrarily.
 
-\begin{ex}
-This example computes the terms of the series directly; as
-an exercise, write a script named {\tt series} that computes
-the same sum by computing the elements recurrently.  You will
-have to be careful about where you start and stop the loop.
-\end{ex}
+Each time through the loop, we compute {\tt consumed}, which
+is the amount of sugar consumed during this generation.  {\tt consumed}
+is the minimum of two quantities: {\tt p * factor} is the amount
+of sugar needed for every cell to reproduce, and {\tt s} is
+the amount of sugar available.
+
+The result is used to update {\tt s} directly, since {\tt consumed}
+represents grams of sugar.  It is also used to update {\tt p},
+but first we have to divide by {\tt factor} to convert from
+grams of sugar to number of cells.
 
 
-\section{Generalization}
+\section{Choosing parameters}
 
-As written, the previous example always adds up the first 10 elements
-of the sequence, but we might be curious to know what happens to {\tt
-  total} as we increase the number of terms in the series.  If you
-have studied geometric series, you might know that this series
-converges on 2; that is, as the number of terms goes to infinity, the
-sum approaches 2 asymptotically.
+The initial values of {\tt p}, {\tt s}, and {\tt factor} are
+{\bf parameters}; that is, input values that affect the behavior
+of the model.  {\tt p} and {\tt s} are {\bf constrained parameters},
+which means that their values are determined by real-world
+constraints.  In this case, {\tt p} is
+provided by the companies that make yeast cultures,
+and I estimated {\tt s} based on the recipe.
+But {\tt factor} is a {\bf free parameter}, which means that it is not
+constrained by background knowledge (at least for now).
 
-To see if that's true for our program, we could replace the constant,
-10, with a variable named {\tt n}:
+The results of the model with these parameters is in Figure~\ref{fig_yeast3}.
 
-\begin{verbatim}
-A1 = 1;
-total = 0;
-for i=1:n
-    a = A1 * 0.5^(i-1);
-    total = total + a;
-end
-ans = total
-\end{verbatim}
+\begin{figure}
+\centerline{\includegraphics[height=7cm]{figs/yeast3}}
+\caption{Results from a two-stock model of yeast growth.}
+\label{fig_yeast3}
+\end{figure}
 
-Now the script can compute any number of terms, with the
-precondition that you have to set {\tt n} before you execute
-the script.  Here's how you could run it with different values
-of {\tt n}:
+The population grows geometrically until the sugar is consumed;
+then it levels off.  At this point some yeast die, but most become
+dormant.  We could add a death process to the model, but it is not
+immediately relevant.
 
-\begin{verbatim}
->> n=10; series
+With these parameters, it takes 12 generations for the yeast to
+consume the sugar, which is about 24 hours (remember that the
+generation time is about 2 hours).
 
-total = 1.99804687500000
+In fact, it takes more like 4 days, or 48 generations, for a
+five-gallon batch of beer to ferment.  We can use this additional data
+to {\bf calibrate} the model; that is, we can use it to estimate the
+value of the free parameter.
 
->> n=20; series
+By adjusting {\tt factor}, we control the time until the yeast
+consumes the sugar.  As {\tt factor} decreases, the value of
+{\tt consumed} decreases, so the time increases.  By trial and
+error, I found that with {\tt factor=1e-13},
+the time to consume the sugar is about 48 generations.
 
-total = 1.99999809265137
+We can use some additional background knowledge to
+{\bf validate} the model; that is, check whether the results are
+credible.
 
->> n=30; series
+After 48 generations, the final population is about $10^{-16}$ billion
+cells, or $10^{25}$ cells.  Each cell weighs about $10^{-11}$ g, so
+that implies that the final weight of yeast cells is $10^{14}$ g or
+$10^{11}$ kg.  For comparison, the total worldwide production of beer
+is about $10^{10}$ kg per year, so something has clearly gone wrong!
 
-total = 1.99999999813735
+We will come back to this model in the next chapter and see if we
+can figure out the problem.
 
->> n=40; series
-
-total = 1.99999999999818
-\end{verbatim}
-
-It sure looks like it's converging on 2.
-
-Replacing a constant with a variable is called {\bf generalization}.
-Instead of computing a fixed, specific number of terms, the new script
-is more general; it can compute any number of terms.
-
-This is an important idea we will come back to when we
-talk about functions.
 
 
 \section{Glossary}
@@ -2348,44 +2298,41 @@ an exact answer.
 an exact answer, expressed as a fraction or percentage of the exact
 answer.
 
+\item[unit testing:] A process of testing software by testing each
+component in isolation.
+
 \item[loop:] A part of a program that runs repeatedly.
 
 \item[loop variable:] A variable, defined in a {\tt for} statement,
 that gets assigned a different value each time through the loop.
 
-\item[range:] The set of values assigned to the loop variable, often
-specified with the colon operator; for example {\tt 1:5}.
-
 \item[body:] The statements inside the for loop that are run
 repeatedly.
 
-\item[unit testing:] A process of testing software by testing each
-component in isolation.
+% TODO: fill these in
 
-\item[sequence:] In mathematics, a set of numbers that correspond
-to the positive integers.
+\item[discrete time:]
 
-\item[element:] A member of the set of numbers in a sequence. 
+\item[continuous time:]
 
-\item[recurrently:] A way of computing the next element of a sequence
-based on previous elements.
+\item[geometric sequence:]
 
-\item[directly:] A way of computing an element in a sequence without
-using previous elements.
+\item[parameter:]
 
-\item[series:] The sum of the elements in a sequence.
+\item[constrained parameter:]
 
-\item[accumulator:] A variable that is used to accumulate a result
-a little bit at a time.
+\item[free parameter:]
 
-\item[generalization:] A way to make a program more versatile, for
-example by replacing a specific value with a variable that can have
-any value.
+\item[calibrate:]
+
+\item[validate:]
 
 \end{description}
 
 
 \section{Exercises}
+
+% TODO: add to these
 
 \begin{ex}
 \label{fib2}
@@ -2429,10 +2376,6 @@ circles.
 \end{ex}
 
 
-
-\include{AnalysisAct1Chapter}
-\include{IsleRoyaleExampleChapter}
-\include{PresentationAct1Chapter}
 
 % chap04
 \chapter{Vectors}
@@ -5065,7 +5008,7 @@ infinity?  Goes to zero?
 
 
 
-\include{AbstractingAct2Chapter}
+%\include{AbstractingAct2Chapter}
 
 
 % chap07
@@ -5588,6 +5531,7 @@ operator to a vector, that contains logical values 1 and 0.
 
 % chap08
 \chapter{Ordinary Differential Equations}
+\label{ode}
 
 
 \section{Differential equations}
@@ -6768,7 +6712,7 @@ $x$, $y$ and $z$.
 \end{ex}
 
 
-\include{AbstractingAct3Chapter}
+%\include{AbstractingAct3Chapter}
 
 
 % chap10
